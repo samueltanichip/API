@@ -11,13 +11,13 @@ pipeline {
             steps {
                 script {
                     try {
-                        // Tente se conectar à EC2 via SSH
+                        // Tentando se conectar via SSH e verificar a resposta
                         echo "Iniciando a conexão SSH com a EC2..."
-                        def command = """powershell -Command "ssh -i '${SSH_KEY_PATH}' ec2-user@${EC2_IP} 'echo Conexão SSH bem-sucedida!'"""
+                        def command = """powershell -Command "ssh -i '${SSH_KEY_PATH}' ec2-user@${EC2_IP} 'uptime'"""
                         def result = bat(script: command, returnStdout: true, wait: true)
                         
                         // Exibe o resultado do comando SSH
-                        echo "Resultado do SSH: ${result}"
+                        echo "Resultado do comando SSH: ${result}"
                     } catch (Exception e) {
                         echo "Erro ao tentar conectar via SSH: ${e.getMessage()}"
                     }

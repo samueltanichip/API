@@ -12,9 +12,9 @@ pipeline {
         stage('Create Directory on EC2') {
             steps {
                 script {
-                    // Comando para criar a pasta na EC2 via SSH
+                    // Comando para criar a pasta na EC2 via SSH usando cmd
                     bat """
-                    powershell -Command "ssh -i '${SSH_KEY_PATH}' ${EC2_USER}@${EC2_IP} 'mkdir -p /home/${EC2_USER}/test_folder'"
+                    ssh -i ${SSH_KEY_PATH} ${EC2_USER}@${EC2_IP} "mkdir -p /home/${EC2_USER}/test_folder"
                     """
                 }
             }

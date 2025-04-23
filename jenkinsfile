@@ -2,16 +2,18 @@ pipeline {
     agent any
 
     environment {
-        EC2_IP = '3.88.90.213' // IP da sua instância EC2
-        SSH_KEY_PATH = 'C:/Users/USER/Downloads/chave_jenkins' // Caminho da chave SSH (ajuste o nome do arquivo)
+        EC2_IP = '3.88.90.213'  // Substitua pelo IP público da sua instância EC2
+        SSH_KEY_PATH = 'C:/Users/USER/Downloads/chave_jenkins'  // Caminho da sua chave privada SSH
     }
 
     stages {
-        stage('Testar Conexão com EC2') {
+        stage('Test SSH Connection') {
             steps {
                 script {
+                    // Teste a conexão SSH com a EC2
+                    echo "Iniciando a conexão SSH com a EC2..."
                     bat """
-                    powershell -Command "ssh -i '${SSH_KEY_PATH}' -o StrictHostKeyChecking=no ec2-user@${EC2_IP} 'echo Conectado com sucesso! && hostname && whoami && ls -la /home/ec2-user'"
+                    powershell -Command "ssh -i '${SSH_KEY_PATH}' ec2-user@${EC2_IP} 'echo Conexão SSH bem-sucedida!'"
                     """
                 }
             }
@@ -20,10 +22,10 @@ pipeline {
 
     post {
         success {
-            echo "Conexão com EC2 testada com sucesso!"
+            echo "Conexão SSH bem-sucedida com a EC2!"
         }
         failure {
-            echo "Falha ao conectar na EC2. Verifique o IP, chave SSH e permissões."
+            echo "Falha na conexão SSH com a EC2!"
         }
     }
 }

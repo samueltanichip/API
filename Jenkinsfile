@@ -14,7 +14,7 @@ pipeline {
                 script {
                     // Usando Git Bash para executar o SSH
                     bat """
-                    ""C:\\Program Files\\Git\\bin\\bash.exe"" -c "ssh -i '${SSH_KEY_PATH}' ${EC2_USER}@${EC2_IP} 'mkdir -p /home/${EC2_USER}/test_folder'"
+                    \"C:\\Program Files\\Git\\bin\\bash.exe\" -c "ssh -i '${SSH_KEY_PATH}' ${EC2_USER}@${EC2_IP} 'mkdir -p /home/${EC2_USER}/test_folder'"
                     """
                 }
             }

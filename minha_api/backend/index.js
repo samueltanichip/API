@@ -13,7 +13,7 @@ let produtos = [
 
 // Rota simples
 app.get('/', (req, res) => {
-  res.send('Olá, mundo! A API está funcionando.');
+  res.send('Hello world! A API está funcionando.');
 });
 
 // Rota para listar produtos

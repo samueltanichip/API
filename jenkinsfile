@@ -2,25 +2,19 @@ pipeline {
     agent any
 
     environment {
-        EC2_IP = '3.88.90.213'  // Substitua pelo IP público da sua instância EC2
-        SSH_KEY_PATH = 'C:/Users/USER/Downloads/chave_jenkins.pem'  // Caminho da sua chave privada SSH
+        EC2_IP = '3.88.90.213'  // Substitua pelo IP da sua EC2
+        SSH_KEY_PATH = 'C:/Users/USER/Downloads/chave_jenkins.pem'  // Caminho para sua chave privada SSH
+        EC2_USER = 'ec2-user'  // Usuário padrão para instâncias EC2 com Amazon Linux
     }
 
     stages {
-        stage('Test SSH Connection') {
+        stage('Create Directory on EC2') {
             steps {
                 script {
-                    try {
-                        // Testando a conexão SSH com o cmd
-                        echo "Iniciando a conexão SSH com a EC2..."
-                        def command = """cmd /c "ssh -i ${SSH_KEY_PATH} ec2-user@${EC2_IP} uptime" """
-                        def result = bat(script: command, returnStdout: true, returnStderr: true, wait: true)
-
-                        // Exibe o resultado do comando SSH
-                        echo "Resultado do comando SSH: ${result}"
-                    } catch (Exception e) {
-                        echo "Erro ao tentar conectar via SSH: ${e.getMessage()}"
-                    }
+                    // Comando para criar a pasta na EC2 via SSH
+                    bat """
+                    powershell -Command "ssh -i '${SSH_KEY_PATH}' ${EC2_USER}@${EC2_IP} 'mkdir -p /home/${EC2_USER}/test_folder'"
+                    """
                 }
             }
         }
@@ -28,10 +22,10 @@ pipeline {
 
     post {
         success {
-            echo "Conexão SSH bem-sucedida com a EC2!"
+            echo 'Pasta criada com sucesso na EC2!'
         }
         failure {
-            echo "Falha na conexão SSH com a EC2!"
+            echo 'Falha ao criar a pasta na EC2!'
         }
     }
 }

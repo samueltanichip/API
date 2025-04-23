@@ -11,10 +11,10 @@ pipeline {
     stages {
         stage('Deploy na EC2') {
             steps {
-                script {
-                    bat """
-                    \"C:\\Program Files\\Git\\bin\\bash.exe\" -c "ssh -o StrictHostKeyChecking=no -i 'C:/Users/USER/Downloads/chave_jenkins.pem' ec2-user@3.88.90.213 \\\"cd /home/ec2-user/API && git pull && npm install && pm2 restart all\\\""
-                    """
+               script {
+                bat '''
+                    "C:\\Program Files\\Git\\bin\\bash.exe" -c "ssh -o StrictHostKeyChecking=no -i 'C:/Users/USER/Downloads/chave_jenkins.pem' ec2-user@3.88.90.213 'cd /home/ec2-user/API && git pull && npm install && pm2 restart all'"
+                    '''
                 }
             }
         }

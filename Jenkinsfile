@@ -14,7 +14,7 @@ pipeline {
                 script {
                     // Usando Git Bash para executar o SSH com StrictHostKeyChecking desligado
                     bat """
-                    \"C:\\Program Files\\Git\\bin\\bash.exe\" -c "ssh -o StrictHostKeyChecking=no -i '${SSH_KEY_PATH}' ${EC2_USER}@${EC2_IP} 'mkdir -p /home/${EC2_USER}/test_folder'"
+                    \"C:\\Program Files\\Git\\bin\\bash.exe\" -c "ssh -o StrictHostKeyChecking=no -i '${SSH_KEY_PATH}' ${EC2_USER}@${EC2_IP} 'mkdir -p /home/${EC2_USER}/test_2'"
                     """
                 }
             }

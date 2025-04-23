@@ -1,0 +1,59 @@
+pipeline {
+    agent any
+
+    environment {
+        EC2_IP = '3.88.90.213'  // Coloque o IP da sua instância EC2
+        DEPLOY_DIR = '/home/ec2-user/API'  // Caminho do diretório na sua EC2 onde a API será implantada
+        SSH_KEY_PATH = 'C:\Users\USER\Downloads'  // Caminho para a chave privada SSH
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    // Fazer checkout do código do repositório Git
+                    git branch: 'main', url: 'https://github.com/samueltanichip/API.git'
+                }
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                script {
+                    // Instalar dependências (se for um projeto Node.js, por exemplo)
+                    bat 'npm install'
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    // Compilar o projeto, se necessário (ajuste conforme sua stack)
+                    bat 'npm run build'
+                }
+            }
+        }
+
+        stage('Deploy to EC2') {
+            steps {
+                script {
+                    // Usando PowerShell para fazer a conexão SSH e deploy na EC2
+                    bat """
+                    powershell -Command "ssh -i ${SSH_KEY_PATH} ec2-user@${EC2_IP} 'cd ${DEPLOY_DIR} && git pull origin main && npm install && pm2 restart app || pm2 start app.js && git add . && git commit -m \"Atualização automatica via Jenkins\" && git push origin main'"
+                    "
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Deploy realizado com sucesso na EC2 e alterações commitadas!"
+        }
+        failure {
+            echo "Houve um erro no deploy!"
+        }
+    }
+}

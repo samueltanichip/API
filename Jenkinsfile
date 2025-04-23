@@ -5,6 +5,7 @@ pipeline {
         EC2_IP = '3.88.90.213'  // Substitua pelo IP da sua EC2
         SSH_KEY_PATH = 'C:/Users/USER/Downloads/chave_jenkins.pem'  // Caminho para sua chave privada SSH
         EC2_USER = 'ec2-user'  // Usuário padrão para instâncias EC2 com Amazon Linux
+        PATH = "C:\\Program Files\\Git\\bin;C:\\Windows\\System32;${env.PATH}"
     }
 
     stages {

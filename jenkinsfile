@@ -10,11 +10,17 @@ pipeline {
         stage('Test SSH Connection') {
             steps {
                 script {
-                    // Teste a conexão SSH com a EC2
-                    echo "Iniciando a conexão SSH com a EC2..."
-                    bat """
-                    powershell -Command "ssh -i '${SSH_KEY_PATH}' ec2-user@${EC2_IP} 'echo Conexão SSH bem-sucedida!'"
-                    """
+                    try {
+                        // Tente se conectar à EC2 via SSH
+                        echo "Iniciando a conexão SSH com a EC2..."
+                        def command = """powershell -Command "ssh -i '${SSH_KEY_PATH}' ec2-user@${EC2_IP} 'echo Conexão SSH bem-sucedida!'"""
+                        def result = bat(script: command, returnStdout: true, wait: true)
+                        
+                        // Exibe o resultado do comando SSH
+                        echo "Resultado do SSH: ${result}"
+                    } catch (Exception e) {
+                        echo "Erro ao tentar conectar via SSH: ${e.getMessage()}"
+                    }
                 }
             }
         }

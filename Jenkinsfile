@@ -9,15 +9,11 @@ pipeline {
     }
 
     stages {
-        stage('Atualizar e Startar API na EC2') {
+        stage('Deploy na EC2') {
             steps {
                 script {
                     bat """
-                    \"C:\\Program Files\\Git\\bin\\bash.exe\" -c "ssh -o StrictHostKeyChecking=no -i '${SSH_KEY_PATH}' ${EC2_USER}@${EC2_IP} '
-                        cd /home/${EC2_USER}/API &&
-                        git pull origin main &&
-                        npm install &&
-                        npm start &'"
+                    \"C:\\Program Files\\Git\\bin\\bash.exe\" -c "ssh -o StrictHostKeyChecking=no -i 'C:/Users/USER/Downloads/chave_jenkins.pem' ec2-user@3.88.90.213 \\\"cd /home/ec2-user/API && git pull && npm install && pm2 restart all\\\""
                     """
                 }
             }
@@ -26,7 +22,7 @@ pipeline {
 
     post {
         success {
-            echo 'API atualizada e iniciada com sucesso na EC2!'
+            echo 'API atualizada com sucesso na EC2!'
         }
         failure {
             echo 'Falha ao atualizar e iniciar a API na EC2!'

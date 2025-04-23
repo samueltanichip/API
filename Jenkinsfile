@@ -2,19 +2,22 @@ pipeline {
     agent any
 
     environment {
-        EC2_IP = '3.88.90.213'  // Substitua pelo IP da sua EC2
-        SSH_KEY_PATH = 'C:/Users/USER/Downloads/chave_jenkins.pem'  // Caminho para sua chave privada SSH
-        EC2_USER = 'ec2-user'  // Usuário padrão para instâncias EC2 com Amazon Linux
+        EC2_IP = '3.88.90.213'
+        SSH_KEY_PATH = 'C:/Users/USER/Downloads/chave_jenkins.pem'
+        EC2_USER = 'ec2-user'
         PATH = "C:\\Program Files\\Git\\bin;C:\\Windows\\System32;${env.PATH}"
     }
 
     stages {
-        stage('Create Directory on EC2') {
+        stage('Atualizar e Startar API na EC2') {
             steps {
                 script {
-                    // Usando Git Bash para executar o SSH com StrictHostKeyChecking desligado
                     bat """
-                    \"C:\\Program Files\\Git\\bin\\bash.exe\" -c "ssh -o StrictHostKeyChecking=no -i '${SSH_KEY_PATH}' ${EC2_USER}@${EC2_IP} 'mkdir -p /home/${EC2_USER}/test_2'"
+                    \"C:\\Program Files\\Git\\bin\\bash.exe\" -c "ssh -o StrictHostKeyChecking=no -i '${SSH_KEY_PATH}' ${EC2_USER}@${EC2_IP} '
+                        cd /home/${EC2_USER}/API &&
+                        git pull origin main &&
+                        npm install &&
+                        npm start &'"
                     """
                 }
             }
@@ -23,10 +26,10 @@ pipeline {
 
     post {
         success {
-            echo 'Pasta criada com sucesso na EC2!'
+            echo 'API atualizada e iniciada com sucesso na EC2!'
         }
         failure {
-            echo 'Falha ao criar a pasta na EC2!'
+            echo 'Falha ao atualizar e iniciar a API na EC2!'
         }
     }
 }

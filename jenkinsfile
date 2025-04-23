@@ -4,7 +4,7 @@ pipeline {
     environment {
         EC2_IP = '3.88.90.213'  // Coloque o IP da sua instância EC2
         DEPLOY_DIR = '/home/ec2-user/API'  // Caminho do diretório na sua EC2 onde a API será implantada
-        SSH_KEY_PATH = 'C:/Users/USER/Downloads'  // Caminho para a chave privada SSH
+        SSH_KEY_PATH = 'C:/Users/USER/Downloads/sua-chave.pem'  // Caminho completo para a chave privada SSH
     }
 
     stages {
@@ -38,10 +38,9 @@ pipeline {
         stage('Deploy to EC2') {
             steps {
                 script {
-                    // Usando PowerShell para fazer a conexão SSH e deploy na EC2
                     bat """
-                    powershell -Command "ssh -i ${SSH_KEY_PATH} ec2-user@${EC2_IP} 'cd ${DEPLOY_DIR} && git reset --hard && git pull origin main && npm install && pm2 restart app || pm2 start app.js'"
-                    "
+                    powershell -Command "ssh -i '${SSH_KEY_PATH}' ec2-user@${EC2_IP} \\
+                    'cd ${DEPLOY_DIR} && git fetch origin && git reset --hard origin/main && git pull origin main && npm install && (pm2 restart app || pm2 start app.js)'"
                     """
                 }
             }

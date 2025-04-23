@@ -35,12 +35,23 @@ pipeline {
             }
         }
 
-        stage('Deploy to EC2') {
+       stage('Deploy to EC2') {
     steps {
         script {
             bat """
-            powershell -Command "ssh -i '${SSH_KEY_PATH}' ec2-user@${EC2_IP} \\
-            'cd ${DEPLOY_DIR} && git fetch origin && git reset --hard origin/main && npm install && (pm2 restart app || pm2 start app.js)'"
+            powershell -Command \"
+            \$output = ssh -i '${SSH_KEY_PATH}' ec2-user@${EC2_IP} '
+                cd ${DEPLOY_DIR} && 
+                echo === Diretório Atual === && pwd &&
+                echo === Arquivos Antes === && ls -la &&
+                git fetch origin &&
+                git reset --hard origin/main &&
+                echo === Arquivos Depois === && ls -la &&
+                npm install &&
+                (pm2 restart app || pm2 start app.js)
+            ';
+            Write-Host \$output
+            \"
             """
         }
     }

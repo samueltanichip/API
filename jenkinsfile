@@ -4,7 +4,7 @@ pipeline {
     environment {
         EC2_IP = '3.88.90.213'  // Coloque o IP da sua instância EC2
         DEPLOY_DIR = '/home/ec2-user/API'  // Caminho do diretório na sua EC2 onde a API será implantada
-        SSH_KEY_PATH = 'C:/Users/USER/Downloads/sua-chave.pem'  // Caminho completo para a chave privada SSH
+        SSH_KEY_PATH = 'C:\Users\USER\Downloads\chave_jenkins.pem'  // Caminho completo para a chave privada SSH
     }
 
     stages {

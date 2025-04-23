@@ -1,5 +1,9 @@
 pipeline {
     agent any
+    
+    triggers {
+        pollSCM('* * * * *')  // Polling do SCM a cada 1 minuto
+    }
 
     environment {
         EC2_IP = '3.88.90.213'

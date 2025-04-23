@@ -2,68 +2,28 @@ pipeline {
     agent any
 
     environment {
-        EC2_IP = '3.88.90.213'  // Coloque o IP da sua instância EC2
-        DEPLOY_DIR = '/home/ec2-user/API'  // Caminho do diretório na sua EC2 onde a API será implantada
-        SSH_KEY_PATH = 'C:\Users\USER\Downloads\chave_jenkins.pem'  // Caminho completo para a chave privada SSH
+        EC2_IP = '3.88.90.213' // IP da sua instância EC2
+        SSH_KEY_PATH = 'C:/Users/USER/Downloads/chave_jenkins' // Caminho da chave SSH (ajuste o nome do arquivo)
     }
 
     stages {
-        stage('Checkout') {
+        stage('Testar Conexão com EC2') {
             steps {
                 script {
-                    // Fazer checkout do código do repositório Git
-                    git branch: 'main', url: 'https://github.com/samueltanichip/API.git'
+                    bat """
+                    powershell -Command "ssh -i '${SSH_KEY_PATH}' -o StrictHostKeyChecking=no ec2-user@${EC2_IP} 'echo Conectado com sucesso! && hostname && whoami && ls -la /home/ec2-user'"
+                    """
                 }
             }
         }
-
-        stage('Install Dependencies') {
-            steps {
-                script {
-                    // Instalar dependências (se for um projeto Node.js, por exemplo)
-                    bat 'npm install'
-                }
-            }
-        }
-
-        stage('Build') {
-            steps {
-                script {
-                    // Compilar o projeto, se necessário (ajuste conforme sua stack)
-                    bat 'npm run build'
-                }
-            }
-        }
-
-       stage('Deploy to EC2') {
-    steps {
-        script {
-            bat """
-            powershell -Command \"
-            \$output = ssh -i '${SSH_KEY_PATH}' ec2-user@${EC2_IP} '
-                cd ${DEPLOY_DIR} && 
-                echo === Diretório Atual === && pwd &&
-                echo === Arquivos Antes === && ls -la &&
-                git fetch origin &&
-                git reset --hard origin/main &&
-                echo === Arquivos Depois === && ls -la &&
-                npm install &&
-                (pm2 restart app || pm2 start app.js)
-            ';
-            Write-Host \$output
-            \"
-            """
-        }
-    }
-}
     }
 
     post {
         success {
-            echo "Deploy realizado com sucesso na EC2 e aplicação reiniciada!"
+            echo "Conexão com EC2 testada com sucesso!"
         }
         failure {
-            echo "Houve um erro no deploy!"
+            echo "Falha ao conectar na EC2. Verifique o IP, chave SSH e permissões."
         }
     }
 }

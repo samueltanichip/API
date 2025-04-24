@@ -22,22 +22,23 @@ pipeline {
                 }
             }
         }
-
-        stage('Criar artefato da pasta API') {
+        
+                stage('Criar artefato da pasta api') {
             steps {
                 script {
                     bat """
-                    if exist API (
-                        cd API
+                    if exist api (
+                        cd api
                         "C:\\Program Files\\7-Zip\\7z.exe" a -tzip ..\\${ARTIFACT_NAME} * 
                     ) else (
-                        echo Pasta API não encontrada!
+                        echo Pasta api não encontrada!
                         exit /b 1
                     )
                     """
                 }
             }
         }
+
 
         stage('Enviar artefato via SCP') {
             steps {

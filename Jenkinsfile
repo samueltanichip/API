@@ -23,19 +23,14 @@ pipeline {
                 }
             }
         }
-
-        stage('Criar artefato da pasta api') {
-            steps {
-                script {
-                    bat """
-                    if exist ${DEPLOY_DIR}\\minha_api (
-                        cd ${DEPLOY_DIR}\\minha_api
-                        "C:\\Program Files\\7-Zip\\7z.exe" a -tzip ${DEPLOY_DIR}\\${ARTIFACT_NAME} * 
-                    ) else (
-                        echo Pasta api não encontrada!
-                        exit /b 1
-                    )
-                    """
+        
+     stage('Criar artefato da pasta deploy_EC2') {
+         steps {
+             script {
+                  bat """
+                  cd ${DEPLOY_DIR}
+                 "C:\\Program Files\\7-Zip\\7z.exe" a -tzip ${DEPLOY_DIR}\\${ARTIFACT_NAME} *
+                """
                 }
             }
         }

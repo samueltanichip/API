@@ -15,23 +15,27 @@ pipeline {
     }
 
     stages {
-        stage('Verificar Diretório API') {
+        stage('Clonar Repositório') {
             steps {
                 script {
-                    echo "Verificando diretório do repositório: ${pwd()}"
+                    // Garantir que o repositório seja clonado completamente
+                    checkout scm
+                    // Remover qualquer configuração de sparseCheckout, se necessário
+                    sh 'git config core.sparseCheckout false'   // Força o clone completo
+                    sh 'git reset --hard HEAD'                  // Reseta para a última versão
                 }
             }
         }
-        
-                stage('Criar artefato da pasta api') {
+
+        stage('Criar artefato da pasta API') {
             steps {
                 script {
                     bat """
-                    if exist api (
-                        cd api
-                        "C:\\Program Files\\7-Zip\\7z.exe" a -tzip ..\\${ARTIFACT_NAME} * 
+                    if exist API (
+                        cd API
+                        "C:\\Program Files\\7-Zip\\7z.exe" a -tzip ..\\${ARTIFACT_NAME} *
                     ) else (
-                        echo Pasta api não encontrada!
+                        echo Pasta API não encontrada!
                         exit /b 1
                     )
                     """
@@ -39,12 +43,11 @@ pipeline {
             }
         }
 
-
         stage('Enviar artefato via SCP') {
             steps {
                 script {
                     bat """
-                    "C:\\Program Files\\Git\\usr\\bin\\scp.exe" -i "${SSH_KEY_PATH}" -o StrictHostKeyChecking=no ${ARTIFACT_NAME} ${EC2_USER}@${EC2_IP}:${REMOTE_PATH}/${ARTIFACT_NAME}
+                    "C:\\Program Files\\Git\\bin\\scp.exe" -i "${SSH_KEY_PATH}" -o StrictHostKeyChecking=no ${ARTIFACT_NAME} ${EC2_USER}@${EC2_IP}:${REMOTE_PATH}/${ARTIFACT_NAME}
                     """
                 }
             }

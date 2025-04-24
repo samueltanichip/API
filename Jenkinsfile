@@ -1,27 +1,39 @@
 pipeline {
     agent any
 
+    triggers {
+        pollSCM('* * * * *')
+    }
+
+    environment {
+        EC2_IP = '54.242.241.68'
+        SSH_KEY_PATH = 'C:/Users/USER/Downloads/chave_jenkins.pem'
+        EC2_USER = 'ec2-user'
+        REMOTE_PATH = '/home/ec2-user/API'
+        ARTIFACT_NAME = 'api_artifact.zip'
+        PATH = "C:\\Program Files\\Git\\bin;C:\\Windows\\System32;${env.PATH}"
+    }
+
+
+
     stages {
-        stage('Clonar Repositório') {
+        stage('Verificar Diretório API') {
             steps {
                 script {
-                    checkout scm
-                    // Caso precise de comandos git adicionais, use bat no Windows
-                    bat 'git config core.sparseCheckout false'
-                    bat 'git reset --hard HEAD'
+                    echo "Verificando diretório do repositório: ${pwd()}"
                 }
             }
         }
-
-        stage('Criar artefato da pasta API') {
+        
+                stage('Criar artefato da pasta api') {
             steps {
                 script {
                     bat """
-                    if exist API (
-                        cd API
-                        "C:\\Program Files\\7-Zip\\7z.exe" a -tzip ..\\${ARTIFACT_NAME} *
+                    if exist api (
+                        cd api
+                        "C:\\Program Files\\7-Zip\\7z.exe" a -tzip ..\\${ARTIFACT_NAME} * 
                     ) else (
-                        echo Pasta API não encontrada!
+                        echo Pasta api não encontrada!
                         exit /b 1
                     )
                     """
@@ -29,11 +41,12 @@ pipeline {
             }
         }
 
+
         stage('Enviar artefato via SCP') {
             steps {
                 script {
                     bat """
-                    "C:\\Program Files\\Git\\bin\\scp.exe" -i "${SSH_KEY_PATH}" -o StrictHostKeyChecking=no ${ARTIFACT_NAME} ${EC2_USER}@${EC2_IP}:${REMOTE_PATH}/${ARTIFACT_NAME}
+                    "C:\\Program Files\\Git\\usr\\bin\\scp.exe" -i "${SSH_KEY_PATH}" -o StrictHostKeyChecking=no ${ARTIFACT_NAME} ${EC2_USER}@${EC2_IP}:${REMOTE_PATH}/${ARTIFACT_NAME}
                     """
                 }
             }
@@ -49,6 +62,15 @@ pipeline {
                     """
                 }
             }
+        }
+    }
+
+    post {
+        success {
+            echo 'Deploy concluído com sucesso!'
+        }
+        failure {
+            echo 'Falha no processo de deploy!'
         }
     }
 }

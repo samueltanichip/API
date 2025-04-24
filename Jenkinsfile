@@ -9,14 +9,14 @@ pipeline {
         ARTIFACT_NAME = 'api.zip'
         REMOTE_DEPLOY_DIR = '/home/ec2-user/API/minha_api/backend'
         REMOTE_TEMP_DIR = '/home/ec2-user/deploy'
-        BASH = 'C:/Program Files/Git/bin/bash.exe'
+        GIT_BASH_PATH = 'C:/Program Files/Git/bin/bash.exe'
     }
 
     stages {
         stage('Gerar artefato') {
             steps {
                 script {
-                    sh """
+                    bat """
                     rm -f ${ARTIFACT_NAME} artifact.hash || true
                     zip -r '${ARTIFACT_NAME}' '${LOCAL_API_PATH}'/*
                     sha256sum '${ARTIFACT_NAME}' | awk '{print \$1}' > artifact.hash
@@ -28,7 +28,9 @@ pipeline {
         stage('Verificar versão remota') {
             steps {
                 script {
-                    sh """
+                    bat """
+                    # Usando o Git Bash para executar o comando SSH e SCP
+                    "${GIT_BASH_PATH}" -c "
                     # Garante que a pasta remota exista
                     ssh -i '${SSH_KEY_PATH}' -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_IP} 'mkdir -p ${REMOTE_TEMP_DIR}'
 
@@ -46,6 +48,7 @@ pipeline {
 
                     # Baixa resultado da comparação
                     scp -i '${SSH_KEY_PATH}' -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_IP}:${REMOTE_TEMP_DIR}/result.txt result.txt
+                    "
                     """
                 }
             }
@@ -59,7 +62,9 @@ pipeline {
             }
             steps {
                 script {
-                    sh """
+                    bat """
+                    # Usando o Git Bash para executar o comando SCP e SSH
+                    "${GIT_BASH_PATH}" -c "
                     # Envia artefato zipado
                     scp -i '${SSH_KEY_PATH}' -o StrictHostKeyChecking=no ${ARTIFACT_NAME} ${EC2_USER}@${EC2_IP}:${REMOTE_TEMP_DIR}/
 
@@ -72,6 +77,7 @@ pipeline {
                         mv ${REMOTE_TEMP_DIR}/artifact_local.hash ${REMOTE_TEMP_DIR}/artifact.hash &&
                         rm -f ${REMOTE_TEMP_DIR}/api.zip ${REMOTE_TEMP_DIR}/result.txt
                     '
+                    "
                     """
                 }
             }

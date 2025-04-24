@@ -24,13 +24,14 @@ pipeline {
             }
         }
         
-     stage('Criar artefato da pasta deploy_EC2') {
-         steps {
-             script {
-                  bat """
-                  cd ${DEPLOY_DIR}
-                 "C:\\Program Files\\7-Zip\\7z.exe" a -tzip ${DEPLOY_DIR}\\${ARTIFACT_NAME} *
-                """
+        stage('Criar artefato da pasta deploy_EC2') {
+            steps {
+                script {
+                    bat """
+                    cd ${DEPLOY_DIR}
+                    if exist ${ARTIFACT_NAME} del ${ARTIFACT_NAME}
+                    "C:\\Program Files\\7-Zip\\7z.exe" a -tzip ${ARTIFACT_NAME} *
+                    """
                 }
             }
         }

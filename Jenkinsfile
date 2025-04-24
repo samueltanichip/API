@@ -14,13 +14,12 @@ pipeline {
         PATH = "C:\\Program Files\\Git\\bin;C:\\Windows\\System32;${env.PATH}"
     }
 
-    stages {
-        stage('Criar artefato da pasta API') {
-            steps {
-                script {
-                    bat """
-                    powershell Compress-Archive -Path API\\* -DestinationPath ${ARTIFACT_NAME} -Force
-                    """
+    stage('Criar artefato da pasta API') {
+        steps {
+            script {
+                  bat """
+                  "C:\\Program Files\\7-Zip\\7z.exe" a -tzip ${ARTIFACT_NAME} .\\API\\*
+                """
                 }
             }
         }

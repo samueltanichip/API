@@ -51,8 +51,8 @@ pipeline {
                 script {
                     bat """
                     set "SSH_BASE=ssh -o StrictHostKeyChecking=no -i \\"${SSH_KEY_PATH}\\" ${EC2_USER}@${EC2_IP}"
-                    set "DEPLOY_CMDS=cd ${REMOTE_PATH} && unzip -o ${ARTIFACT_NAME} && cd backend && npm install && pm2 restart api || pm2 start index.js --name api"
-                    "C:\\Program Files\\Git\\bin\\bash.exe" -c "%SSH_BASE% '%DEPLOY_CMDS%'"
+                    set "DEPLOY_CMDS=rm -rf ${REMOTE_PATH}/* && unzip -o ${ARTIFACT_NAME} -d ${REMOTE_PATH} && cd ${REMOTE_PATH}/backend && npm install && pm2 restart api || pm2 start index.js --name api"
+                    "C:\\Program Files\\Git\\bin\\bash.exe" -c "%SSH_BASE% \\"%DEPLOY_CMDS%\\""
                     """
                 }
             }

@@ -12,9 +12,8 @@ pipeline {
         REMOTE_PATH = '/home/ec2-user/API'
         ARTIFACT_NAME = 'api_artifact.zip'
         PATH = "C:\\Program Files\\Git\\bin;C:\\Windows\\System32;${env.PATH}"
+        DEPLOY_DIR = 'C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\deploy_EC2'
     }
-
-
 
     stages {
         stage('Verificar Diretório API') {
@@ -24,14 +23,14 @@ pipeline {
                 }
             }
         }
-        
-                stage('Criar artefato da pasta api') {
+
+        stage('Criar artefato da pasta api') {
             steps {
                 script {
                     bat """
-                    if exist api (
-                        cd api
-                        "C:\\Program Files\\7-Zip\\7z.exe" a -tzip ..\\${ARTIFACT_NAME} * 
+                    if exist ${DEPLOY_DIR}\\api (
+                        cd ${DEPLOY_DIR}\\api
+                        "C:\\Program Files\\7-Zip\\7z.exe" a -tzip ${DEPLOY_DIR}\\${ARTIFACT_NAME} * 
                     ) else (
                         echo Pasta api não encontrada!
                         exit /b 1
@@ -41,12 +40,11 @@ pipeline {
             }
         }
 
-
         stage('Enviar artefato via SCP') {
             steps {
                 script {
                     bat """
-                    "C:\\Program Files\\Git\\usr\\bin\\scp.exe" -i "${SSH_KEY_PATH}" -o StrictHostKeyChecking=no ${ARTIFACT_NAME} ${EC2_USER}@${EC2_IP}:${REMOTE_PATH}/${ARTIFACT_NAME}
+                    "C:\\Program Files\\Git\\usr\\bin\\scp.exe" -i "${SSH_KEY_PATH}" -o StrictHostKeyChecking=no ${DEPLOY_DIR}\\${ARTIFACT_NAME} ${EC2_USER}@${EC2_IP}:${REMOTE_PATH}/${ARTIFACT_NAME}
                     """
                 }
             }

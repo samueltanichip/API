@@ -15,14 +15,14 @@ pipeline {
         DEPLOY_DIR = 'C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\deploy_EC2'
     }
 
-    stages {
-        stage('Verificar Diretório API') {
-            steps {
-                script {
-                    echo "Verificando diretório do repositório: ${pwd()}"
+        stages {
+            stage('Verificar Diretório API') {
+                steps {
+                    script {
+                        echo "Verificando diretório do repositório: ${pwd()}"
+                    }
                 }
             }
-        }
         
         stage('Criar artefato da pasta deploy_EC2') {
             steps {
@@ -50,7 +50,7 @@ pipeline {
             steps {
                 script {
                     bat """
-                    set "SSH_BASE=ssh -o StrictHostKeyChecking=no -i \\"${SSH_KEY_PATH}\\" ${EC2_USER}@${EC2_IP}"
+                    set "SSH_BASE=ssh -o StrictHostKeyChecking=no -i ^"${SSH_KEY_PATH}^" ${EC2_USER}@${EC2_IP}"
                     set "DEPLOY_CMDS=rm -rf ${REMOTE_PATH}/* && unzip -o ${ARTIFACT_NAME} -d ${REMOTE_PATH} && cd ${REMOTE_PATH}/backend && npm install && pm2 restart api || pm2 start index.js --name api"
                     "C:\\Program Files\\Git\\bin\\bash.exe" -c "%SSH_BASE% \\"%DEPLOY_CMDS%\\""
                     """

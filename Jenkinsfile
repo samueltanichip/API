@@ -16,7 +16,7 @@ pipeline {
             steps {
                 script {
                     // Comando para verificar a versão do artefato remoto
-                    def remoteVersion = sh(script: """
+                    def remoteVersion = bat(script: """
                         ssh -o StrictHostKeyChecking=no -i "${SSH_KEY_PATH}" ${EC2_USER}@${EC2_IP} 'cat ${REMOTE_DEPLOY_BASE_DIR}/version.txt'
                     """, returnStdout: true).trim()
 

@@ -28,8 +28,8 @@ pipeline {
             steps {
                 script {
                     bat """
-                    if exist ${DEPLOY_DIR}\\deploy_EC2 (
-                        cd ${DEPLOY_DIR}\\deploy_EC2
+                    if exist ${DEPLOY_DIR}\\minha_api (
+                        cd ${DEPLOY_DIR}\\minha_api
                         "C:\\Program Files\\7-Zip\\7z.exe" a -tzip ${DEPLOY_DIR}\\${ARTIFACT_NAME} * 
                     ) else (
                         echo Pasta api não encontrada!

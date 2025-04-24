@@ -15,11 +15,11 @@ pipeline {
     }
 
     stages {
-        stage('Criar artefato') {
+        stage('Criar artefato da pasta API') {
             steps {
                 script {
                     bat """
-                    powershell Compress-Archive -Path backend\\* -DestinationPath ${ARTIFACT_NAME} -Force
+                    powershell Compress-Archive -Path API\\* -DestinationPath ${ARTIFACT_NAME} -Force
                     """
                 }
             }
@@ -35,12 +35,12 @@ pipeline {
             }
         }
 
-        stage('Deploy na EC2') {
+        stage('Deploy na EC2 (descompactar e reiniciar)') {
             steps {
                 script {
                     bat """
                     set "SSH_BASE=ssh -o StrictHostKeyChecking=no -i \\"${SSH_KEY_PATH}\\" ${EC2_USER}@${EC2_IP}"
-                    set "DEPLOY_CMDS=cd ${REMOTE_PATH} && unzip -o ${ARTIFACT_NAME} -d ./ && cd backend && npm install && pm2 restart api || pm2 start index.js --name api"
+                    set "DEPLOY_CMDS=cd ${REMOTE_PATH} && unzip -o ${ARTIFACT_NAME} && cd backend && npm install && pm2 restart api || pm2 start index.js --name api"
                     "C:\\Program Files\\Git\\bin\\bash.exe" -c "%SSH_BASE% '%DEPLOY_CMDS%'"
                     """
                 }

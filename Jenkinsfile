@@ -6,7 +6,7 @@ pipeline {
     }
 
     environment {
-        EC2_IP = '3.88.90.213'
+        EC2_IP = '54.242.241.68'
         SSH_KEY_PATH = 'C:/Users/USER/Downloads/chave_jenkins.pem'
         EC2_USER = 'ec2-user'
         PATH = "C:\\Program Files\\Git\\bin;C:\\Windows\\System32;${env.PATH}"

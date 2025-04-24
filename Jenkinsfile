@@ -7,12 +7,11 @@ pipeline {
 
     environment {
         EC2_IP = '54.242.241.68'
-        SSH_KEY_PATH = 'C:/Users/USER/Downloads/chave_jenkins.pem'
+        SSH_KEY_PATH = '/home/usuario/Downloads/chave_jenkins.pem'  // Caminho para sua chave no Linux
         EC2_USER = 'ec2-user'
         REMOTE_PATH = '/home/ec2-user/API'
         ARTIFACT_NAME = 'api_artifact.zip'
-        PATH = "C:\\Program Files\\Git\\bin;C:\\Windows\\System32;${env.PATH}"
-        DEPLOY_DIR = 'C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\deploy_EC2'
+        DEPLOY_DIR = '/home/usuario/jenkins/workspace/deploy_EC2'  // Caminho para o diretório de trabalho no Linux
     }
 
     stages {
@@ -27,10 +26,10 @@ pipeline {
         stage('Criar artefato da pasta deploy_EC2') {
             steps {
                 script {
-                    bat """
+                    sh """
                     cd ${DEPLOY_DIR}
-                    if exist ${ARTIFACT_NAME} del ${ARTIFACT_NAME}
-                    "C:\\Program Files\\7-Zip\\7z.exe" a -tzip ${ARTIFACT_NAME} *
+                    if [ -f ${ARTIFACT_NAME} ]; then rm ${ARTIFACT_NAME}; fi
+                    zip -r ${ARTIFACT_NAME} *
                     """
                 }
             }
@@ -39,8 +38,8 @@ pipeline {
         stage('Enviar artefato via SCP') {
             steps {
                 script {
-                    bat """
-                    "C:\\Program Files\\Git\\usr\\bin\\scp.exe" -i "${SSH_KEY_PATH}" -o StrictHostKeyChecking=no ${DEPLOY_DIR}\\${ARTIFACT_NAME} ${EC2_USER}@${EC2_IP}:${REMOTE_PATH}/${ARTIFACT_NAME}
+                    sh """
+                    scp -i "${SSH_KEY_PATH}" -o StrictHostKeyChecking=no ${DEPLOY_DIR}/${ARTIFACT_NAME} ${EC2_USER}@${EC2_IP}:${REMOTE_PATH}/${ARTIFACT_NAME}
                     """
                 }
             }
@@ -49,12 +48,12 @@ pipeline {
         stage('Deploy na EC2') {
             steps {
                 script {
-                    bat """
-                    set SSH_BASE=ssh -o StrictHostKeyChecking=no -i \\"${SSH_KEY_PATH}\\" ${EC2_USER}@${EC2_IP}
-                    set CD_API=cd ${REMOTE_PATH}/minha_api/backend
-                    set PULL_INSTALL_RESTART=git pull && npm install
-                    set RESTART_API=pm2 restart api || pm2 start index.js --name api
-                    "C:\\Program Files\\Git\\bin\\bash.exe" -c "%SSH_BASE% '%CD_API% && %PULL_INSTALL_RESTART% && %RESTART_API%'"
+                    sh """
+                    SSH_BASE="ssh -o StrictHostKeyChecking=no -i ${SSH_KEY_PATH} ${EC2_USER}@${EC2_IP}"
+                    CD_API="cd ${REMOTE_PATH}/minha_api/backend"
+                    PULL_INSTALL_RESTART="git pull && npm install"
+                    RESTART_API="pm2 restart api || pm2 start index.js --name api"
+                    ${SSH_BASE} '${CD_API} && ${PULL_INSTALL_RESTART} && ${RESTART_API}'
                     """
                 }
             }

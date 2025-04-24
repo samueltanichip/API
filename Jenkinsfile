@@ -11,15 +11,16 @@ pipeline {
         EC2_USER = 'ec2-user'
         REMOTE_PATH = '/home/ec2-user/API'
         ARTIFACT_NAME = 'api_artifact.zip'
-        PATH = "C:\\Program Files\\Git\\bin;C:\\Windows\\System32;${env.PATH}"
+        PATH = "C:\\Program Files\\Git\\bin;C:\\Program Files\\7-Zip;C:\\Windows\\System32;${env.PATH}"
     }
 
-    stage('Criar artefato da pasta API') {
-        steps {
-            script {
-                  bat """
-                  "C:\\Program Files\\7-Zip\\7z.exe" a -tzip ${ARTIFACT_NAME} .\\API\\*
-                """
+    stages {
+        stage('Criar artefato da pasta API') {
+            steps {
+                script {
+                    bat """
+                    "C:\\Program Files\\7-Zip\\7z.exe" a -tzip ${ARTIFACT_NAME} .\\API\\*
+                    """
                 }
             }
         }

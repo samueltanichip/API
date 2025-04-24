@@ -15,15 +15,15 @@ pipeline {
         DEPLOY_DIR = 'C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\deploy_EC2'
     }
 
-        stages {
-            stage('Verificar Diretório API') {
-                steps {
-                    script {
-                        echo "Verificando diretório do repositório: ${pwd()}"
-                    }
+    stages {
+        stage('Verificar Diretório API') {
+            steps {
+                script {
+                    echo "Verificando diretório do repositório: ${pwd()}"
                 }
             }
-        
+        }
+
         stage('Criar artefato da pasta deploy_EC2') {
             steps {
                 script {
@@ -45,15 +45,15 @@ pipeline {
                 }
             }
         }
-     stages {
+
         stage('Deploy na EC2') {
             steps {
                 script {
                     bat """
-                    set "SSH_BASE=ssh -o StrictHostKeyChecking=no -i \\"${SSH_KEY_PATH}\\" ${EC2_USER}@${EC2_IP}"
-                    set "CD_API=cd /home/${EC2_USER}/API/minha_api/backend"
-                    set "PULL_INSTALL_RESTART=git pull && npm install"
-                    set "RESTART_API=pm2 restart api || pm2 start index.js --name api"
+                    set SSH_BASE=ssh -o StrictHostKeyChecking=no -i \\"${SSH_KEY_PATH}\\" ${EC2_USER}@${EC2_IP}
+                    set CD_API=cd /home/${EC2_USER}/API/minha_api/backend
+                    set PULL_INSTALL_RESTART=git pull && npm install
+                    set RESTART_API=pm2 restart api || pm2 start index.js --name api
                     "C:\\Program Files\\Git\\bin\\bash.exe" -c "%SSH_BASE% '%CD_API% && %PULL_INSTALL_RESTART% && %RESTART_API%'"
                     """
                 }
@@ -70,3 +70,4 @@ pipeline {
         }
     }
 }
+

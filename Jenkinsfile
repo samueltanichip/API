@@ -1,28 +1,14 @@
 pipeline {
     agent any
 
-    triggers {
-        pollSCM('* * * * *')
-    }
-
-    environment {
-        EC2_IP = '54.242.241.68'
-        SSH_KEY_PATH = 'C:/Users/USER/Downloads/chave_jenkins.pem'
-        EC2_USER = 'ec2-user'
-        REMOTE_PATH = '/home/ec2-user/API'
-        ARTIFACT_NAME = 'api_artifact.zip'
-        PATH = "C:\\Program Files\\Git\\bin;C:\\Windows\\System32;${env.PATH}"
-    }
-
     stages {
         stage('Clonar Repositório') {
             steps {
                 script {
-                    // Garantir que o repositório seja clonado completamente
                     checkout scm
-                    // Remover qualquer configuração de sparseCheckout, se necessário
-                    sh 'git config core.sparseCheckout false'   // Força o clone completo
-                    sh 'git reset --hard HEAD'                  // Reseta para a última versão
+                    // Caso precise de comandos git adicionais, use bat no Windows
+                    bat 'git config core.sparseCheckout false'
+                    bat 'git reset --hard HEAD'
                 }
             }
         }
@@ -63,15 +49,6 @@ pipeline {
                     """
                 }
             }
-        }
-    }
-
-    post {
-        success {
-            echo 'Deploy concluído com sucesso!'
-        }
-        failure {
-            echo 'Falha no processo de deploy!'
         }
     }
 }

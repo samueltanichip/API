@@ -4,7 +4,7 @@ pipeline {
     environment {
         EC2_USER = 'ec2-user'  // Usuário da sua EC2
         EC2_HOST = '3.94.152.221'  // IP público da sua instância EC2
-        EC2_KEY_PATH = '/var/jenkins_home/chave_jenkins.pem'  // Caminho para sua chave SSH no container
+        EC2_KEY_PATH = '/mnt/c/users/USER/Downloads/chave_jenkins.pem'  // Caminho para sua chave SSH no container
     }
 
     stages {

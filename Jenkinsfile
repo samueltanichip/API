@@ -11,7 +11,7 @@ pipeline {
         EC2_USER = 'ec2-user'
         REMOTE_PATH = '/home/ec2-user/API'
         ARTIFACT_NAME = 'api_artifact.zip'
-        DEPLOY_DIR = '/home/usuario/jenkins/workspace/deploy_EC2'  // Caminho para o diretório de trabalho no Linux
+        DEPLOY_DIR = '/root/jenkins_data/workspace/deploy-EC2'  // Caminho para o diretório de trabalho no Linux
     }
 
     stages {

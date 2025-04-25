@@ -6,7 +6,7 @@ pipeline {
     }
 
     environment {
-        EC2_IP = '54.242.241.68'
+        EC2_IP = '3.94.152.221'
         SSH_KEY_PATH = '/home/usuario/Downloads/chave_jenkins.pem'  // Caminho para sua chave no Linux
         EC2_USER = 'ec2-user'
         REMOTE_PATH = '/home/ec2-user/API'

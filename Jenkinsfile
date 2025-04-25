@@ -7,7 +7,7 @@ pipeline {
         EC2_IP = '3.94.152.221'
         EC2_KEY_PATH = '/var/jenkins_home/chave_jenkins.pem'
         REMOTE_DIR = '/home/ec2-user/API'
-        LOCAL_DIR = '/root/jenkins_data/workspace/deploy-EC2'
+        LOCAL_DIR = '/var/jenkins_home/workspace/deploy-EC2'
         GIT_REPO = 'https://github.com/samueltanichip/API.git'
         GIT_BRANCH = 'main'
         EC2_USER = 'ec2-user'

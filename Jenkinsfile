@@ -5,7 +5,7 @@ pipeline {
         // Variáveis de ambiente
         EC2_SSH_USER = 'ec2-user'  // Usuário para acessar a EC2 (pode ser 'ubuntu' ou outro dependendo da AMI)
         EC2_IP = '3.94.152.221'  // IP público da sua instância EC2
-        EC2_KEY_PATH = 'C:/Users/USER/Downloads/chave_jenkins.pem'  // Caminho para sua chave privada SSH (no Jenkins)
+        EC2_KEY_PATH = '/var/jenkins_home/chave_jenkins.pem'  // Caminho para sua chave privada SSH (no Jenkins)
         REMOTE_DIR = '/home/ec2-user/API'  // Diretório remoto onde os arquivos serão colocados na EC2
         LOCAL_DIR = '/root/jenkins_data/workspace/deploy-EC2'  // Diretório local contendo os arquivos de build
         GIT_REPO = 'https://github.com/samueltanichip/API.git'

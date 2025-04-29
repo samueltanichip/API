@@ -18,16 +18,29 @@ pipeline {
         }
 
         stage('Extract version from package.json') {
-            steps {
-                script {
-                    // Corrige o caminho para o package.json
-                    def packageJson = readJSON file: '/var/jenkins_home/workspace/deploy-EC2/backend/package.json'
-                    env.APP_VERSION = packageJson.version
-                    env.RELEASE_DIR = "/var/jenkins_home/workspace/deploy-EC2/backend/${env.APP_VERSION}"
-                    echo "Versão: ${env.APP_VERSION}, diretório de release: ${env.RELEASE_DIR}"
-                }
+    steps {
+        script {
+            // Corrige o caminho para o package.json
+            def packageJson = readJSON file: '/var/jenkins_home/workspace/deploy-EC2/backend/package.json'
+            
+            // Verifica se a versão foi lida corretamente
+            echo "Conteúdo do package.json: ${packageJson}"
+
+            // Atribui a versão ao ambiente
+            env.APP_VERSION = packageJson.version
+            
+            // Verifica se a versão foi extraída corretamente
+            if (!env.APP_VERSION) {
+                error("Versão não encontrada no package.json.")
             }
+
+            env.RELEASE_DIR = "/var/jenkins_home/workspace/deploy-EC2/backend/${env.APP_VERSION}"
+
+            // Exibe a versão e diretório
+            echo "Versão: ${env.APP_VERSION}, diretório de release: ${env.RELEASE_DIR}"
         }
+    }
+}
 
         stage('Check if version exists on EC2') {
             steps {

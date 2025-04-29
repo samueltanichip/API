@@ -15,17 +15,16 @@ pipeline {
                 checkout scm
             }
         }
-
-        stage('Extract version from package.json') {
-            steps {
-                script {
-                    def pkg = readJSON file: 'package.json'
-                    env.APP_VERSION = pkg.version
-                    env.RELEASE_DIR = "${DEST_DIR}/${APP_VERSION}"
-                    echo "Versão detectada: ${APP_VERSION}"
-                }
+        
+    stage('Extract version from package.json') {
+        steps {
+            script {
+                def packageJson = readJSON file: 'package.json'
+                env.APP_VERSION = packageJson.version
+                echo "Versão extraída: ${env.APP_VERSION}"
             }
         }
+    }
 
         stage('Check if version exists on EC2') {
             steps {
@@ -73,8 +72,10 @@ pipeline {
     }
 
     post {
-        always {
-            echo "Pipeline finalizada. Versão: ${APP_VERSION}"
+    always {
+        script {
+            echo "Pipeline finalizada. Versão extraída: ${env.APP_VERSION ?: 'desconhecida'}"
         }
     }
+}
 }

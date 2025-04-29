@@ -2,72 +2,79 @@ pipeline {
     agent any
 
     environment {
-        // Variáveis de ambiente
-        EC2_SSH_USER = 'ec2-user'
-        EC2_IP = '3.94.152.221'
-        EC2_KEY_PATH = '/var/jenkins_home/chave_jenkins.pem'
-        REMOTE_DIR = '/home/ec2-user/API'
-        LOCAL_DIR = '/var/jenkins_home/workspace/deploy-EC2'
-        GIT_REPO = 'https://github.com/samueltanichip/API.git'
-        GIT_BRANCH = 'main'
         EC2_USER = 'ec2-user'
         EC2_HOST = '3.94.152.221'
+        DEST_DIR = '/home/ec2-user/API/backend'
+        ARTIFACT_NAME = 'app.tar.gz'
+        SSH_CREDENTIALS = '/var/jenkins_home/chave_jenkins.pem'
     }
 
     stages {
-        stage('Clone Repository') {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Extract version from package.json') {
             steps {
                 script {
-                    git url: "${env.GIT_REPO}", branch: "${env.GIT_BRANCH}"
+                    def pkg = readJSON file: 'package.json'
+                    env.APP_VERSION = pkg.version
+                    env.RELEASE_DIR = "${DEST_DIR}/${APP_VERSION}"
+                    echo "Versão detectada: ${APP_VERSION}"
                 }
             }
         }
 
-        stage('Build') {
+        stage('Check if version exists on EC2') {
             steps {
                 script {
-                    sh 'npm install'
-                    sh 'npm run build || echo "Sem script build, continuando..."'
+                    def result = sh(
+                        script: """ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${EC2_USER}@${EC2_HOST} '[ -d "${RELEASE_DIR}" ] && echo "EXISTS" || echo "NEW"'""",
+                        returnStdout: true
+                    ).trim()
+
+                    if (result == "EXISTS") {
+                        echo "Versão ${APP_VERSION} já existe. Pulando deploy."
+                        currentBuild.result = 'SUCCESS'
+                        error("Deploy já realizado para esta versão.")
+                    } else {
+                        echo "Versão ${APP_VERSION} ainda não existe. Continuando deploy..."
+                    }
                 }
             }
         }
 
-        stage('Test SSH Connection') {
+        stage('Create remote directory') {
             steps {
-                script {
-                    sh "ssh -i ${EC2_KEY_PATH} -o StrictHostKeyChecking=no ${EC2_SSH_USER}@${EC2_IP} 'echo SSH connection successful!'"
-                }
+                sh """
+                    ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${EC2_USER}@${EC2_HOST} 'mkdir -p ${RELEASE_DIR}'
+                """
             }
         }
 
-        stage('Transfer Files to EC2') {
+        stage('Compress and transfer app') {
             steps {
-                script {
-                    sh "scp -i ${EC2_KEY_PATH} -o StrictHostKeyChecking=no -r ${LOCAL_DIR} ${EC2_SSH_USER}@${EC2_IP}:${REMOTE_DIR}"
-                }
+                sh """
+                    tar -czf ${ARTIFACT_NAME} .
+                    scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${ARTIFACT_NAME} ${EC2_USER}@${EC2_HOST}:${RELEASE_DIR}/
+                """
             }
         }
 
-        stage('Deploy on EC2') {
+        stage('Extract on EC2') {
             steps {
-                script {
-                    sh """
-                        ssh -i ${EC2_KEY_PATH} -o StrictHostKeyChecking=no ${EC2_SSH_USER}@${EC2_IP} <<EOF
-                        cd ${REMOTE_DIR}
-                        npm install --production || true
-                        pm2 restart app || pm2 start app.js
-                        EOF
-                    """
-                }
+                sh """
+                    ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${EC2_USER}@${EC2_HOST} 'cd ${RELEASE_DIR} && tar -xzf ${ARTIFACT_NAME}'
+                """
             }
         }
+    }
 
-        stage('Cleanup') {
-            steps {
-                script {
-                    sh 'rm -rf build/ || true'
-                }
-            }
+    post {
+        always {
+            echo "Pipeline finalizada. Versão: ${APP_VERSION}"
         }
     }
 }

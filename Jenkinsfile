@@ -29,20 +29,22 @@ pipeline {
         }
     }
     
-     stage('Check if version exists on EC2') {
-            steps {
-                script {
-                    def result = sh(
-                        script: """ssh -o StrictHostKeyChecking=no -i /var/jenkins_home/chave_jenkins.pem ${EC2_USER}@${EC2_HOST} '[ -d "${RELEASE_DIR}" ] && echo "EXISTS" || echo "NEW"'""",
-                        returnStdout: true
-                    ).trim()
-
-                    if (result == "EXISTS") {
-                        echo "Versão ${APP_VERSION} já existe. Pulando deploy."
-                        currentBuild.result = 'SUCCESS'
-                        error("Deploy já realizado para esta versão.")
-                    } else {
-                        echo "Versão ${APP_VERSION} ainda não existe. Continuando deploy..."
+         stage('Check if version exists on EC2') {
+                steps {
+                    script {
+                        def releaseDir = "/home/ec2-user/API/backend/${env.APP_VERSION}"
+                        def result = sh(
+                            script: """ssh -o StrictHostKeyChecking=no -i /var/jenkins_home/chave_jenkins.pem ${EC2_USER}@${EC2_HOST} '[ -d "${releaseDir}" ] && echo "EXISTS" || echo "NEW"'""",
+                            returnStdout: true
+                        ).trim()
+            
+                        if (result == "EXISTS") {
+                            echo "Versão ${env.APP_VERSION} já existe. Pulando deploy."
+                            currentBuild.result = 'SUCCESS'
+                            error("Deploy já realizado para esta versão.")
+                        } else {
+                            echo "Versão ${env.APP_VERSION} ainda não existe. Continuando deploy..."
+                        }
                     }
                 }
             }

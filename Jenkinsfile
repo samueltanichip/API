@@ -17,11 +17,11 @@ pipeline {
             }
         }
             
-       stage('Extract version from package.json') {
-        steps {
-            dir('API') {
+     stage('Extract version from package.json') {
+            steps {
                 script {
-                    def packageJson = readJSON file: 'package.json'
+                    // Corrige o caminho para o package.json
+                    def packageJson = readJSON file: '/var/jenkins_home/workspace/deploy-EC2/backend/package.json'
                     env.APP_VERSION = packageJson.version
                     env.RELEASE_DIR = "/var/jenkins_home/workspace/deploy-EC2/backend/${env.APP_VERSION}"
                     echo "Versão: ${env.APP_VERSION}, diretório de release: ${env.RELEASE_DIR}"

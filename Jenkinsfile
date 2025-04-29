@@ -33,7 +33,7 @@ pipeline {
             steps {
                 script {
                     def result = sh(
-                        script: """ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${EC2_USER}@${EC2_HOST} '[ -d "${RELEASE_DIR}" ] && echo "EXISTS" || echo "NEW"'""",
+                        script: """ssh -o StrictHostKeyChecking=no -i /var/jenkins_home/chave_jenkins.pem ${EC2_USER}@${EC2_HOST} '[ -d "${RELEASE_DIR}" ] && echo "EXISTS" || echo "NEW"'""",
                         returnStdout: true
                     ).trim()
 

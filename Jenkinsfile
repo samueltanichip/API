@@ -70,13 +70,16 @@ pipeline {
                 }
             }
         }
-
-       stage('Extract on EC2') {
+        
+        stage('Extract on EC2') {
             steps {
                 script {
-                    def releaseDir = "/home/ec2-user/API/backend/${env.APP_VERSION}"
+                    def releaseDir = "/home/ec2-user/API/backend"
+                    def artifactPath = "${releaseDir}/${ARTIFACT_NAME}"
                     sh """
-                        ssh -o StrictHostKeyChecking=no -i ${SSH_CREDENTIALS} ${EC2_USER}@${EC2_HOST} 'cd ${releaseDir} && tar -xzf ${ARTIFACT_NAME}'
+                        ssh -o StrictHostKeyChecking=no -i ${SSH_CREDENTIALS} ${EC2_USER}@${EC2_HOST} '
+                            tar -xzf ${artifactPath} -C ${releaseDir} && rm -f ${artifactPath}
+                        '
                     """
                 }
             }

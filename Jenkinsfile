@@ -56,16 +56,21 @@ pipeline {
             }
         }
 
-        stage('Compress and transfer app') {
-            steps {
+           stage('Compress and transfer app') {
+        steps {
+            script {
+                // Cria um diretório temporário para evitar conflito com arquivos sendo alterados
                 sh """
-                    tar -czf ${ARTIFACT_NAME} .
-                    scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${ARTIFACT_NAME} ${EC2_USER}@${EC2_HOST}:${RELEASE_DIR}/
+                    mkdir -p temp_dir
+                    cp -r * temp_dir/
+                    tar -czf ${ARTIFACT_NAME} -C temp_dir .
+                    rm -rf temp_dir
                 """
             }
         }
+    }
 
-        stage('Extract on EC2') {
+     stage('Extract on EC2') {
             steps {
                 sh """
                     ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${EC2_USER}@${EC2_HOST} 'cd ${RELEASE_DIR} && tar -xzf ${ARTIFACT_NAME}'

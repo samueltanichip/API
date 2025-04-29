@@ -19,7 +19,7 @@ pipeline {
     stage('Extract version from package.json') {
         steps {
             script {
-                def packageJson = readJSON file: 'package.json'
+                def packageJson = readJSON file: '/var/jenkins_home/workspace/deploy-EC2/backend/package.json'
                 env.APP_VERSION = packageJson.version
                 echo "Versão extraída: ${env.APP_VERSION}"
             }

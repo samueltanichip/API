@@ -7,6 +7,7 @@ pipeline {
         DEST_DIR = '/home/ec2-user/API/backend'
         ARTIFACT_NAME = 'app.tar.gz'
         SSH_CREDENTIALS = '/var/jenkins_home/chave_jenkins.pem'
+        RELEASE_DIR = "/home/ec2-user/API/backend/${env.APP_VERSION}"
     }
 
     stages {
@@ -15,13 +16,16 @@ pipeline {
                 checkout scm
             }
         }
-        
-    stage('Extract version from package.json') {
+            
+       stage('Extract version from package.json') {
         steps {
-            script {
-                def packageJson = readJSON file: '/var/jenkins_home/workspace/deploy-EC2/backend/package.json'
-                env.APP_VERSION = packageJson.version
-                echo "Versão extraída: ${env.APP_VERSION}"
+            dir('API') {
+                script {
+                    def packageJson = readJSON file: 'package.json'
+                    env.APP_VERSION = packageJson.version
+                    env.RELEASE_DIR = "/var/www/deploys/${env.APP_VERSION}"
+                    echo "Versão: ${env.APP_VERSION}, diretório de release: ${env.RELEASE_DIR}"
+                }
             }
         }
     }

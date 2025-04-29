@@ -72,3 +72,13 @@ pipeline {
                 """
             }
         }
+    }
+
+    post {
+        always {
+            script {
+                echo "Pipeline finalizada. Versão extraída: ${env.APP_VERSION ?: 'desconhecida'}"
+            }
+        }
+    }
+}

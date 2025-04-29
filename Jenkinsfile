@@ -51,7 +51,7 @@ pipeline {
         stage('Create remote directory') {
             steps {
                 sh """
-                    ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${EC2_USER}@${EC2_HOST} 'mkdir -p ${RELEASE_DIR}'
+                    ssh -o StrictHostKeyChecking=no -i /var/jenkins_home/chave_jenkins.pem ${EC2_USER}@${EC2_HOST} 'mkdir -p ${RELEASE_DIR}'
                 """
             }
         }

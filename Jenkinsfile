@@ -16,8 +16,8 @@ pipeline {
                 checkout scm
             }
         }
-            
-     stage('Extract version from package.json') {
+
+        stage('Extract version from package.json') {
             steps {
                 script {
                     // Corrige o caminho para o package.json
@@ -28,7 +28,6 @@ pipeline {
                 }
             }
         }
-    }
 
         stage('Check if version exists on EC2') {
             steps {
@@ -73,13 +72,3 @@ pipeline {
                 """
             }
         }
-    }
-
-    post {
-    always {
-        script {
-            echo "Pipeline finalizada. Versão extraída: ${env.APP_VERSION ?: 'desconhecida'}"
-        }
-    }
-}
-}

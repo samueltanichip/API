@@ -1,6 +1,6 @@
 {
   "name": "minha_api",
-  "version": "1.120",
+  "version": "1.130",
   "description": "",
   "main": "index.js",
   "scripts": {

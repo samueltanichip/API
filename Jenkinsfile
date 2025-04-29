@@ -62,7 +62,7 @@ pipeline {
                 script {
                     sh """
                         mkdir -p temp_dir
-                        cp -r backend Jenkinsfile temp_dir/
+                        cp -r backend/* Jenkinsfile temp_dir/
                         tar -czf ${ARTIFACT_NAME} -C temp_dir .
                         rm -rf temp_dir
                         scp -o StrictHostKeyChecking=no -i ${SSH_CREDENTIALS} ${ARTIFACT_NAME} ${EC2_USER}@${EC2_HOST}:/home/ec2-user/API/backend/${env.APP_VERSION}/
@@ -71,7 +71,7 @@ pipeline {
             }
         }
 
-        stage('Extract on EC2') {
+       stage('Extract on EC2') {
             steps {
                 script {
                     def releaseDir = "/home/ec2-user/API/backend/${env.APP_VERSION}"

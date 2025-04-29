@@ -23,7 +23,7 @@ pipeline {
                 script {
                     def packageJson = readJSON file: 'package.json'
                     env.APP_VERSION = packageJson.version
-                    env.RELEASE_DIR = "/var/www/deploys/${env.APP_VERSION}"
+                    env.RELEASE_DIR = "/var/jenkins_home/workspace/deploy-EC2/backend/${env.APP_VERSION}"
                     echo "Versão: ${env.APP_VERSION}, diretório de release: ${env.RELEASE_DIR}"
                 }
             }
